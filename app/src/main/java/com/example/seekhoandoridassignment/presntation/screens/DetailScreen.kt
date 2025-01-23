@@ -119,7 +119,7 @@ fun DetailScreen( animeId: Int,imageUrl:String) {
             CastSection(cast)
         }
         Text(
-            text = "Number of Episodes: ${animeDetails.noOfEpisodes}",
+            text = "Episodes: ${animeDetails.noOfEpisodes}",
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(bottom = 16.dp)
         )
