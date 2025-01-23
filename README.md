@@ -46,7 +46,7 @@ Shows detailed information for a selected anime, including:
 ![Anime List](screenshots/anime_list.jpeg)
 
 ### Anime Detail Screen
-![Anime Detail](screenshots/anime_details.jpeg)
+![Anime Detail](screenshots/anime_Details.jpeg)
 
 
 1. Clone the repository:
