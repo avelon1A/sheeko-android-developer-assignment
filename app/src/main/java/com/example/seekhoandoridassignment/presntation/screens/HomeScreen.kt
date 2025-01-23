@@ -1,6 +1,7 @@
 package com.example.seekhoandoridassignment.presntation.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil3.compose.SubcomposeAsyncImage
 import com.example.seekhoandoridassignment.data.dto.Anime
 import com.example.seekhoandoridassignment.data.dto.AnimeListDto
@@ -33,7 +35,7 @@ import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavController) {
     val viewModel: HomeViewModel = koinViewModel()
     val animeListState = viewModel.animeListState.collectAsState()
 
@@ -49,7 +51,8 @@ fun HomeScreen() {
             val animeList:AnimeListDto = (animeListState.value as ApiState.Success<AnimeListDto>).data
             LazyColumn {
                 items(animeList.animeList.size) { anime ->
-                    AnimeItem(animeList.animeList[anime])
+                    AnimeItem(animeList.animeList[anime],click = {navController.navigate(
+                        DetailScreenNav(animeList.animeList[anime].id))})
                 }
             }
         }
@@ -62,18 +65,21 @@ fun HomeScreen() {
 }
 
 @Composable
-fun AnimeItem(anime: Anime) {
+fun AnimeItem(anime: Anime,click:()->Unit) {
     Row(modifier = Modifier
         .fillMaxWidth()
         .padding(16.dp)
         .clip(RoundedCornerShape(8.dp))
-        .background(MaterialTheme.colorScheme.surface)
         .padding(8.dp)
+        .clickable {
+            click()
+        }
     ) {
         SubcomposeAsyncImage(
             model = anime.img,
             contentDescription = anime.title,
             modifier = Modifier
+        .background(MaterialTheme.colorScheme.surface)
                 .size(100.dp)
                 .clip(RoundedCornerShape(8.dp)),
             contentScale = ContentScale.Crop

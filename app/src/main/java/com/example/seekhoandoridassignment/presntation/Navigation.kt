@@ -10,6 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import com.example.seekhoandoridassignment.presntation.screens.DetailScreen
+import com.example.seekhoandoridassignment.presntation.screens.DetailScreenNav
 import com.example.seekhoandoridassignment.presntation.screens.HomeScreen
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -18,16 +21,22 @@ fun AppNavHost(
     modifier: Modifier = Modifier,
 ) {
     SharedTransitionLayout {
+        val navController = rememberNavController()
         NavHost(
-            navController = rememberNavController(),
+            navController = navController,
             startDestination = HomeScreen,
             modifier = modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
             composable<HomeScreen> {
-                HomeScreen( )
+                HomeScreen( navController )
             }
+        composable<DetailScreenNav> {
+            val animeId = it.toRoute<DetailScreenNav>()
+            DetailScreen(animeId = animeId.animeId)
+        }
+
 //            this@SharedTransitionLayout, this@composable
 
         }

@@ -5,7 +5,8 @@ data class AnimeListDto (
 )
 data class Anime(
     val title: String,
-    val numberOfEpisode: String,
-    val rating: Int,
-    val img: String
+    val numberOfEpisode: Int?,
+    val rating: Double,
+    val img: String,
+    val id: Int
 )

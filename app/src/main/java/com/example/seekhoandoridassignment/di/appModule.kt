@@ -4,6 +4,8 @@ import com.example.seekhoandoridassignment.BuildConfig.BASE_URL
 import com.example.seekhoandoridassignment.data.network.AnimeRepositoryImp
 import com.example.seekhoandoridassignment.data.network.ApiService
 import com.example.seekhoandoridassignment.domain.repository.AnimeRepository
+import com.example.seekhoandoridassignment.presntation.screens.DetailScreen
+import com.example.seekhoandoridassignment.presntation.viewmodels.DetailViewModel
 import com.example.seekhoandoridassignment.presntation.viewmodels.HomeViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -15,8 +17,8 @@ val  appModule = module {
  single { provideRetrofit(get()) }
  single { provideService(get()) }
  single { provideAnimeRepository(get()) }
-// single<AnimeRepository> { AnimeRepositoryImp(get()) }
  viewModel { HomeViewModel(get()) }
+ viewModel { DetailViewModel(get()) }
 
 
 }

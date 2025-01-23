@@ -20,9 +20,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SeekhoAndoridAssignmentTheme {
-                AppNavHost(
-                    modifier = Modifier.padding(),
-                )
+                Scaffold { innerPadding ->
+                    AppNavHost(
+                        modifier = Modifier.padding(innerPadding),
+                    )
+                }
 
             }
         }

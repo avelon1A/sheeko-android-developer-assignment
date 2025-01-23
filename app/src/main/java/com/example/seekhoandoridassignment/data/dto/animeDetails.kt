@@ -1,9 +1,11 @@
 package com.example.seekhoandoridassignment.data.dto
 
-data class AnimeDetails(
-val title: String,
+data class AnimeDetailsDto(
+    val title: String,
+    val trailer: String?,
     val plot: String,
-    val genres: String,
-    val mainCast: String,
-    val noOfEpisodes: Int
+    val genres: String?,
+    val mainCast: List<AnimeCharactersDto>?,
+    val noOfEpisodes: Int?,
+    val imageUrl: String
 )
