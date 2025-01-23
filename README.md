@@ -41,12 +41,14 @@ Shows detailed information for a selected anime, including:
 - YouTube trailer playback (if available).
 
 ## Screenshots
+<div style="display: flex; justify-content: center;">
+  <img src="screenshots/anime_list.jpeg" width="300" style="margin-right: 20px;" />
+  <img src="screenshots/anime_Details.jpeg" width="300" />
+</div>
 
-### Anime List Screen
-![Anime List](screenshots/anime_list.jpeg)
 
-### Anime Detail Screen
-![Anime Detail](screenshots/anime_Details.jpeg)
+
+
 
 
 1. Clone the repository:
