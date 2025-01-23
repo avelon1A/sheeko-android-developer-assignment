@@ -1,7 +1,9 @@
 package com.example.seekhoandoridassignment.presntation.screens
 
 import android.util.Log
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,9 +21,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,38 +41,52 @@ import com.example.seekhoandoridassignment.presntation.viewmodels.DetailViewMode
 import com.example.seekhoandoridassignment.uitl.ApiState
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
+import kotlin.random.Random
 
 @Composable
-fun DetailScreen( animeId: Int) {
+fun DetailScreen( animeId: Int,imageUrl:String) {
     val viewModel: DetailViewModel = koinViewModel()
     val animeDetailState = viewModel.animeDetailState.collectAsState()
     var animeDetails: AnimeDetailsDto
+    var dominantColor  =  remember { mutableStateOf(Color.Black) }
+
+
 
     LaunchedEffect(Unit) {
         viewModel.getAnimeDetail(animeId)
+        dominantColor.value = generateRandomColor()
+
     }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState())
-    ) {
-        when (val state = animeDetailState.value) {
-            is ApiState.Error -> {
-                Log.d("error", state.message.toString())
-                Text(text = state.message.toString())
+    Box(modifier = Modifier.fillMaxSize().background(
+        brush = Brush.verticalGradient(
+            colors = listOf(Color.Transparent, dominantColor.value.copy(0.8f))
+        )
+    )) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState())
+        )
+        {
+            when (val state = animeDetailState.value) {
+                is ApiState.Error -> {
+                    Log.d("error", state.message.toString())
+                    Text(text = state.message.toString())
+                }
+
+                is ApiState.Success -> {
+                    animeDetails = state.data
+                    DetailView(animeDetails)
+                }
+
+                ApiState.Loading -> {
+                    Log.d("detail page", "loading")
+                    Text(text = "loading")
+
+                }
             }
 
-            is ApiState.Success -> {
-                animeDetails = state.data
-                DetailView(animeDetails)
-            }
-
-            ApiState.Loading -> {
-                Log.d("detail page", "loading")
-                Text(text = "loading")
-
-            }
         }
 
     }
@@ -74,22 +95,43 @@ fun DetailScreen( animeId: Int) {
     fun DetailView(animeDetails: AnimeDetailsDto){
             Text(
                 text = animeDetails.title,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp,top = 12.dp)
             )
-
-                TrailerSection(trailerUrl = animeDetails.trailer.toString(),
+                      TrailerSection(trailerUrl = animeDetails.trailer,
                     imageUrl = animeDetails.imageUrl,
-                    modifier = Modifier.fillMaxWidth().height(200.dp)
-                    )
+                          modifier = Modifier.fillMaxWidth().height(200.dp)
+                      )
+
+
 
 
             Spacer(modifier = Modifier.height(16.dp))
 
+        animeDetails.mainCast?.let { cast ->
+            Text(
+                text = "Main Cast",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+            CastSection(cast)
+        }
+        Text(
+            text = "Number of Episodes: ${animeDetails.noOfEpisodes}",
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        Text(
+            text = "Genres: ${animeDetails.genres}",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
             Text(
                 text = "Plot",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
@@ -99,33 +141,16 @@ fun DetailScreen( animeId: Int) {
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            Text(
-                text = "Genres: ${animeDetails.genres}",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
 
-            Text(
-                text = "Number of Episodes: ${animeDetails.noOfEpisodes}",
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
 
-            Text(
-                text = "Main Cast",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-            animeDetails.mainCast?.let { cast ->
-                CastSection(cast)
-            }
+
+
 
     }
 
     @Composable
-    fun TrailerSection(trailerUrl: String,imageUrl:String,modifier: Modifier) {
-        if (trailerUrl.isEmpty() ){
+    fun TrailerSection(trailerUrl: String?,imageUrl:String,modifier: Modifier) {
+        if (trailerUrl != null ){
                 val lifecycle = LocalLifecycleOwner.current
                 VideoPlayer(id = trailerUrl , modifier = modifier,lifecycleOwner = lifecycle)
         }
@@ -133,7 +158,8 @@ fun DetailScreen( animeId: Int) {
             SubcomposeAsyncImage(
                 model =  imageUrl,
                 contentDescription = null,
-                modifier = modifier
+                modifier = modifier,
+                contentScale = ContentScale.Crop
             )
 
         }
@@ -142,25 +168,27 @@ fun DetailScreen( animeId: Int) {
 
     @Composable
     fun CastSection(cast: List<AnimeCharactersDto>) {
-        Column {
+        val scrollable = rememberScrollState()
+        Row(Modifier.horizontalScroll(scrollable)) {
             cast.forEach { character ->
-                Row(
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .size(120.dp)
                         .padding(vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     SubcomposeAsyncImage(
                         model =  character.images,
                         contentDescription = null,
                         modifier = Modifier
-                            .size(50.dp)
-                            .clip(CircleShape)
+                            .size(80.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = character.name?.toString() ?: "",
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(start = 8.dp)
                     )
                 }
@@ -194,7 +222,13 @@ fun DetailPreview(){
     
 }
 
+fun generateRandomColor(): Color {
+    val red = Random.nextInt(0, 128)
+    val green = Random.nextInt(0, 128)
+    val blue = Random.nextInt(0, 128)
+    return Color(red, green, blue)
+}
 
 
 @Serializable
-data class DetailScreenNav(val animeId: Int)
+data class DetailScreenNav(val animeId: Int,val imageUrl:String)

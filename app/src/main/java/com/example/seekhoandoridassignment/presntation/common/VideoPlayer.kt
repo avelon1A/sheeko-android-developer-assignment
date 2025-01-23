@@ -20,8 +20,7 @@ fun VideoPlayer(id: String,modifier: Modifier ,lifecycleOwner: LifecycleOwner) {
                 lifecycleOwner.lifecycle.addObserver(this)
                 addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
                     override fun onReady(youTubePlayer: YouTubePlayer) {
-                        youTubePlayer.loadVideo(id, 0f)
-                    }
+                        youTubePlayer.cueVideo(id, 0f)                    }
                 })
             }
         }

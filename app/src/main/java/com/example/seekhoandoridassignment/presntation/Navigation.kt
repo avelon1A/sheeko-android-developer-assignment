@@ -34,7 +34,7 @@ fun AppNavHost(
             }
         composable<DetailScreenNav> {
             val animeId = it.toRoute<DetailScreenNav>()
-            DetailScreen(animeId = animeId.animeId)
+            DetailScreen(animeId = animeId.animeId,imageUrl = animeId.imageUrl)
         }
 
 //            this@SharedTransitionLayout, this@composable
