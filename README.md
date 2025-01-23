@@ -43,7 +43,7 @@ Shows detailed information for a selected anime, including:
 ## Screenshots
 
 ### Anime List Screen
-![Anime List](screenshots/anime_list.png)
+![Anime List](screenshots/anime_list.jpeg)
 
 ### Anime Detail Screen
 ![Anime Detail](screenshots/anime_detail.png)
