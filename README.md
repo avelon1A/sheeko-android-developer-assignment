@@ -1,4 +1,4 @@
-# Anime List and Detail App
+# Seekho Android developer assignment
 
 ## Overview
 
