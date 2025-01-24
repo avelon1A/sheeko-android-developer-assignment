@@ -22,6 +22,7 @@ palette = "1.0.0"
 retrofit = "2.11.0"
 serialization = "1.7.1"
 media3Ui = "1.4.1"
+coreSplashscreen = "1.0.1"
 
 
 
@@ -55,6 +56,7 @@ navigation-compose = { module = "androidx.navigation:navigation-compose", versio
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization"}
 androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3Ui" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 
 
 

@@ -10,10 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
-import com.example.seekhoandoridassignment.presntation.screens.DetailScreen
-import com.example.seekhoandoridassignment.presntation.screens.DetailScreenNav
 import com.example.seekhoandoridassignment.presntation.screens.HomeScreen
+import com.example.seekhoandoridassignment.presntation.viewmodels.HomeViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -29,15 +28,11 @@ fun AppNavHost(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            composable<HomeScreen> {
-                HomeScreen( navController )
-            }
-        composable<DetailScreenNav> {
-            val animeId = it.toRoute<DetailScreenNav>()
-            DetailScreen(animeId = animeId.animeId,imageUrl = animeId.imageUrl)
-        }
 
-//            this@SharedTransitionLayout, this@composable
+            composable<HomeScreen> {
+
+                HomeScreen(navController )
+            }
 
         }
     }

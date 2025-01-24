@@ -1,6 +1,7 @@
 package com.example.seekhoandoridassignment.presntation.screens
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,10 +17,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -33,6 +39,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.SubcomposeAsyncImage
 import com.example.seekhoandoridassignment.data.dto.Anime
+import com.example.seekhoandoridassignment.data.dto.AnimeDetailsDto
 import com.example.seekhoandoridassignment.presntation.viewmodels.HomeViewModel
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
@@ -41,37 +48,55 @@ import org.koin.androidx.compose.koinViewModel
 fun HomeScreen(navController: NavController) {
     val viewModel: HomeViewModel = koinViewModel()
     val animeListState = viewModel.animeList.collectAsLazyPagingItems()
+    val animeDetailState = viewModel.animeDetailState.collectAsState()
+    var animeDetails = AnimeDetailsDto(title = "title", trailer = null, plot = "", genres = null, mainCast = null, noOfEpisodes = null, imageUrl = "")
+    var dominantColor = remember { mutableStateOf(Color.Black) }
+    val detailview = remember { mutableStateOf(false)}
+    val scrollState = rememberLazyGridState()
 
-
-
-    when (animeListState.loadState.refresh) {
-        is LoadState.Error -> {
-            Text(text = "Error")
-        }
-       is  LoadState.Loading -> {
-            Box(contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(modifier = Modifier.size(100.dp),
-                    color = Color.Red)
-
-            }
-           Log.d("loading", "home page")
-        }
-       else -> {
-
-           LazyVerticalGrid(columns =GridCells.Fixed(2) ) {
-               items(animeListState.itemCount) { index ->
-                   val anime = animeListState[index]
-                   anime?.let {
-                       AnimeItem(anime = it, click = {
-                           navController.navigate(
-                               DetailScreenNav(it.id, it.img)
-                           )
-                       })
-                   }
-               }
-           }
-       }
+    BackHandler(enabled = detailview.value) {
+        detailview.value = false
     }
+    LaunchedEffect(Unit) {
+        if (animeListState.loadState.refresh is LoadState.Loading) {
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()){
+        if (detailview.value == false) {
+            when (animeListState.loadState.refresh) {
+                is LoadState.Error -> {
+                    Text(text = "Error")
+                }
+                is  LoadState.Loading -> {
+                    Box(contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(modifier = Modifier.size(100.dp),
+                            color = Color.Red)
+
+                    }
+                    Log.d("loading", "home page")
+                }
+                else -> {
+                    LazyVerticalGrid(columns =GridCells.Fixed(2), state = scrollState ) {
+                        items(animeListState.itemCount) { index ->
+                            val anime = animeListState[index]
+                            anime?.let {
+                                AnimeItem(anime = it, click = {
+                                    viewModel.getAnimeDetail(it.id); detailview.value = true; dominantColor.value = generateRandomColor()
+                                })
+                            }
+                        }
+                    }
+                }
+            }
+
+        } else {
+            DetailPageView(dominantColor, animeDetailState, animeDetails)
+
+        }
+    }
+
+
 }
 
 @Composable
