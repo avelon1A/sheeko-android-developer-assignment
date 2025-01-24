@@ -17,6 +17,7 @@ ksp = "2.0.20-1.0.24"
 exoplayer = "2.19.1"
 media3Exoplayer = "1.4.1"
 composeNavigation = "2.8.0-rc01"
+pagingRuntime = "3.3.5"
 palette = "1.0.0"
 retrofit = "2.11.0"
 serialization = "1.7.1"
@@ -27,6 +28,8 @@ media3Ui = "1.4.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingRuntime" }
+androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "pagingRuntime" }
 androidx-palette = { module = "androidx.palette:palette", version.ref = "palette" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilCompose" }

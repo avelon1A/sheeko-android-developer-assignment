@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,11 +45,11 @@ import org.koin.androidx.compose.koinViewModel
 import kotlin.random.Random
 
 @Composable
-fun DetailScreen( animeId: Int,imageUrl:String) {
+fun DetailScreen(animeId: Int, imageUrl: String) {
     val viewModel: DetailViewModel = koinViewModel()
     val animeDetailState = viewModel.animeDetailState.collectAsState()
     var animeDetails: AnimeDetailsDto
-    var dominantColor  =  remember { mutableStateOf(Color.Black) }
+    var dominantColor = remember { mutableStateOf(Color.Black) }
 
 
 
@@ -57,11 +58,16 @@ fun DetailScreen( animeId: Int,imageUrl:String) {
         dominantColor.value = generateRandomColor()
 
     }
-    Box(modifier = Modifier.fillMaxSize().background(
-        brush = Brush.verticalGradient(
-            colors = listOf(Color.Transparent, dominantColor.value.copy(0.8f))
-        )
-    )) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(Color.Transparent, dominantColor.value.copy(0.8f))
+                )
+            ), contentAlignment = Alignment.Center
+    )
+    {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -81,8 +87,12 @@ fun DetailScreen( animeId: Int,imageUrl:String) {
                 }
 
                 ApiState.Loading -> {
-                    Log.d("detail page", "loading")
-                    Text(text = "loading")
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.height(600.dp).fillMaxWidth()) {
+                        CircularProgressIndicator(modifier = Modifier.size(50.dp),
+                            color = Color.Red)
+
+                    }
+
 
                 }
             }
@@ -91,135 +101,142 @@ fun DetailScreen( animeId: Int,imageUrl:String) {
 
     }
 }
-    @Composable
-    fun DetailView(animeDetails: AnimeDetailsDto){
-            Text(
-                text = animeDetails.title,
-                style = MaterialTheme.typography.headlineLarge,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 8.dp,top = 12.dp)
-            )
-                      TrailerSection(trailerUrl = animeDetails.trailer,
-                    imageUrl = animeDetails.imageUrl,
-                          modifier = Modifier.fillMaxWidth().height(200.dp)
-                      )
+
+@Composable
+fun DetailView(animeDetails: AnimeDetailsDto) {
+    Text(
+        text = animeDetails.title,
+        style = MaterialTheme.typography.headlineLarge,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.padding(bottom = 8.dp, top = 12.dp)
+    )
+    TrailerSection(
+        trailerUrl = animeDetails.trailer,
+        imageUrl = animeDetails.imageUrl,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+    )
 
 
 
 
-            Spacer(modifier = Modifier.height(16.dp))
+    Spacer(modifier = Modifier.height(16.dp))
 
-        animeDetails.mainCast?.let { cast ->
-            Text(
-                text = "Main Cast",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-            CastSection(cast)
-        }
+    animeDetails.mainCast?.let { cast ->
         Text(
-            text = "Episodes: ${animeDetails.noOfEpisodes}",
+            text = "Main Cast",
             style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(bottom = 16.dp)
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(vertical = 8.dp)
         )
+        CastSection(cast)
+    }
+    Text(
+        text = "Episodes: ${animeDetails.noOfEpisodes}",
+        style = MaterialTheme.typography.headlineSmall,
+        modifier = Modifier.padding(bottom = 16.dp)
+    )
 
-        Text(
-            text = "Genres: ${animeDetails.genres}",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(bottom = 16.dp)
+    Text(
+        text = "Genres: ${animeDetails.genres}",
+        style = MaterialTheme.typography.titleLarge,
+        modifier = Modifier.padding(bottom = 16.dp)
+    )
+    Text(
+        text = "Plot",
+        style = MaterialTheme.typography.headlineSmall,
+        fontWeight = FontWeight.Medium,
+        modifier = Modifier.padding(vertical = 8.dp)
+    )
+    Text(
+        text = animeDetails.plot,
+        style = MaterialTheme.typography.bodyMedium,
+        modifier = Modifier.padding(bottom = 16.dp)
+    )
+
+
+}
+
+@Composable
+fun TrailerSection(trailerUrl: String?, imageUrl: String, modifier: Modifier) {
+    if (trailerUrl != null) {
+        val lifecycle = LocalLifecycleOwner.current
+        VideoPlayer(id = trailerUrl, modifier = modifier, lifecycleOwner = lifecycle)
+    } else {
+        SubcomposeAsyncImage(
+            model = imageUrl,
+            contentDescription = null,
+            modifier = modifier,
+            contentScale = ContentScale.Crop
         )
-            Text(
-                text = "Plot",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-            Text(
-                text = animeDetails.plot,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-
-
-
-
 
     }
 
-    @Composable
-    fun TrailerSection(trailerUrl: String?,imageUrl:String,modifier: Modifier) {
-        if (trailerUrl != null ){
-                val lifecycle = LocalLifecycleOwner.current
-                VideoPlayer(id = trailerUrl , modifier = modifier,lifecycleOwner = lifecycle)
-        }
-            else{
-            SubcomposeAsyncImage(
-                model =  imageUrl,
-                contentDescription = null,
-                modifier = modifier,
-                contentScale = ContentScale.Crop
-            )
+}
 
-        }
-
-    }
-
-    @Composable
-    fun CastSection(cast: List<AnimeCharactersDto>) {
-        val scrollable = rememberScrollState()
-        Row(Modifier.horizontalScroll(scrollable)) {
-            cast.forEach { character ->
-                Column(
+@Composable
+fun CastSection(cast: List<AnimeCharactersDto>) {
+    val scrollable = rememberScrollState()
+    Row(Modifier.horizontalScroll(scrollable)) {
+        cast.forEach { character ->
+            Column(
+                modifier = Modifier
+                    .size(120.dp)
+                    .padding(vertical = 4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                SubcomposeAsyncImage(
+                    model = character.images,
+                    contentDescription = null,
                     modifier = Modifier
-                        .size(120.dp)
-                        .padding(vertical = 4.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    SubcomposeAsyncImage(
-                        model =  character.images,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(80.dp)
-                            .clip(CircleShape),
-                        contentScale = ContentScale.Crop
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = character.name?.toString() ?: "",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
-                }
+                        .size(80.dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = character.name?.toString() ?: "",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
             }
-
         }
+
     }
+}
 
 @Preview(showBackground = true)
 @Composable
-fun DetailPreview(){
+fun DetailPreview() {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        DetailView(animeDetails = AnimeDetailsDto(
-            title = "test preview",
-            trailer = "https://www.youtube.com/watch?v=KA_JwkKBtL8",
-            plot = "\"Yukino Miyazawa is the female representative for her class and the most popular girl among the freshmen at her high school. Good at both academics and sports on top of being elegant and sociable, she has been an object of admiration all her life. However, in reality, she is an incredibly vain person who toils relentlessly to maintain her good grades, athleticism, and graceful appearance. She wants nothing more than to be the center of attention and praise—which is why she cannot stand Souichirou Arima, the male representative for her class and the only person more perfect than her. Since the first day of high school, she has struggled to steal the spotlight from her new rival but to no avail.\\n\\nAt last, on the midterm exams, Yukino gets the top score and beats Souichirou. But, to her surprise, he congratulates her on her achievement, leading her to question her deceptive lifestyle. When Souichirou confesses his love to Yukino, she turns him down and gloats about it at home with only a hint of regret. But the very next day, Souichirou visits Yukino house to bring her a CD and sees her uninhibited self in action; now equipped with the truth, he blackmails her into completing his student council duties. Coerced into spending time with Souichirou, Yukino learns that she is not the only one hiding secrets.\\n\\n[Written by MAL Rewrite]\"",
-            genres = "test",
-            mainCast = listOf(
-                AnimeCharactersDto(name = "Character 1", images = "https://example.com/image1.jpg"),
-                AnimeCharactersDto(name = "Character 2", images = "https://example.com/image2.jpg")
-            ),
-            noOfEpisodes = 3,
-            imageUrl = "https://cdn.myanimelist.net/images/characters/4/123155.jpg?s=71a949a12df96189b1203bfcbbda625a"
-        ))
+        DetailView(
+            animeDetails = AnimeDetailsDto(
+                title = "test preview",
+                trailer = "https://www.youtube.com/watch?v=KA_JwkKBtL8",
+                plot = "\"Yukino Miyazawa is the female representative for her class and the most popular girl among the freshmen at her high school. Good at both academics and sports on top of being elegant and sociable, she has been an object of admiration all her life. However, in reality, she is an incredibly vain person who toils relentlessly to maintain her good grades, athleticism, and graceful appearance. She wants nothing more than to be the center of attention and praise—which is why she cannot stand Souichirou Arima, the male representative for her class and the only person more perfect than her. Since the first day of high school, she has struggled to steal the spotlight from her new rival but to no avail.\\n\\nAt last, on the midterm exams, Yukino gets the top score and beats Souichirou. But, to her surprise, he congratulates her on her achievement, leading her to question her deceptive lifestyle. When Souichirou confesses his love to Yukino, she turns him down and gloats about it at home with only a hint of regret. But the very next day, Souichirou visits Yukino house to bring her a CD and sees her uninhibited self in action; now equipped with the truth, he blackmails her into completing his student council duties. Coerced into spending time with Souichirou, Yukino learns that she is not the only one hiding secrets.\\n\\n[Written by MAL Rewrite]\"",
+                genres = "test",
+                mainCast = listOf(
+                    AnimeCharactersDto(
+                        name = "Character 1",
+                        images = "https://example.com/image1.jpg"
+                    ),
+                    AnimeCharactersDto(
+                        name = "Character 2",
+                        images = "https://example.com/image2.jpg"
+                    )
+                ),
+                noOfEpisodes = 3,
+                imageUrl = "https://cdn.myanimelist.net/images/characters/4/123155.jpg?s=71a949a12df96189b1203bfcbbda625a"
+            )
+        )
     }
-    
+
 }
 
 fun generateRandomColor(): Color {
@@ -231,4 +248,4 @@ fun generateRandomColor(): Color {
 
 
 @Serializable
-data class DetailScreenNav(val animeId: Int,val imageUrl:String)
+data class DetailScreenNav(val animeId: Int, val imageUrl: String)
