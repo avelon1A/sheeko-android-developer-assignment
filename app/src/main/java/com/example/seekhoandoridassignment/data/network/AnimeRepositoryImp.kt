@@ -9,8 +9,8 @@ import com.example.seekhoandoridassignment.data.model.animeDetail
 import com.example.seekhoandoridassignment.domain.repository.AnimeRepository
 
 class AnimeRepositoryImp(val api:ApiService):AnimeRepository  {
-    override suspend fun getAnimeList(): AnimeListDto {
-        val response = api.getAnimeList()
+    override suspend fun getAnimeList( page: Int): AnimeListDto {
+        val response = api.getAnimeList(page)
         if (response.isSuccessful && response.body() != null) {
             val animeListDto = response.body()?.data?.map { animeItemResponse ->
                 Anime(
