@@ -1,6 +1,14 @@
 package com.example.seekhoandoridassignment.presntation.screens
 
+import android.util.Log
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,23 +21,26 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import coil3.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.example.seekhoandoridassignment.data.dto.AnimeCharactersDto
 import com.example.seekhoandoridassignment.data.dto.AnimeDetailsDto
 import com.example.seekhoandoridassignment.presntation.common.VideoPlayer
-import kotlinx.serialization.Serializable
+import com.example.seekhoandoridassignment.uitl.ApiState
 import kotlin.random.Random
 
 
@@ -99,22 +110,60 @@ fun TrailerSection(trailerUrl: String?, imageUrl: String, modifier: Modifier) {
             model = imageUrl,
             contentDescription = null,
             modifier = modifier,
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Crop,
+            loading = {
+                Crossfade(targetState = imageUrl) { targetImageUrl ->
+                    if (targetImageUrl.isNotEmpty()) {
+                        SubcomposeAsyncImage(
+                            model = targetImageUrl,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Black)
+                        )
+                    }
+                }
+
+            },
+            success = {
+                Crossfade(targetState = it) { imageState ->
+                    Image(
+                        painter = imageState.painter,
+                        contentDescription = null,
+                        modifier = modifier,
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
         )
-
     }
-
 }
+
 
 @Composable
 fun CastSection(cast: List<AnimeCharactersDto>) {
     val scrollable = rememberScrollState()
     Row(Modifier.horizontalScroll(scrollable)) {
         cast.forEach { character ->
+            val scale by animateDpAsState(
+                targetValue = if (character.name != null) 1.1.dp else 1.dp,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioLowBouncy,
+                    stiffness = Spring.StiffnessMedium
+                )
+            )
+
             Column(
                 modifier = Modifier
                     .size(120.dp)
-                    .padding(vertical = 4.dp),
+                    .padding(vertical = 4.dp)
+                    .graphicsLayer(scaleX = scale.value, scaleY = scale.value),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 SubcomposeAsyncImage(
@@ -127,15 +176,70 @@ fun CastSection(cast: List<AnimeCharactersDto>) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = character.name?.toString() ?: "",
+                    text = character.name ?: "",
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(start = 8.dp)
                 )
             }
         }
+    }
+}
+
+
+@Composable
+fun DetailPageView(
+    dominantColor: State<Color>,
+    animeDetailState: State<ApiState<AnimeDetailsDto>>,
+    animeDetails: AnimeDetailsDto?
+) {
+    var animeDetails1 = animeDetails
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(Color.Transparent, dominantColor.value.copy(0.8f))
+                )
+            ), contentAlignment = Alignment.Center
+    )
+    {
+
+            when (val state = animeDetailState.value) {
+                is ApiState.Error -> {
+                    Log.d("error", state.message.toString())
+                    Text(text = state.message.toString())
+                }
+
+                is ApiState.Success -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                            .verticalScroll(rememberScrollState())
+                    )
+                    {
+                        animeDetails1 = state.data
+                        DetailView(animeDetails1)
+                    }
+                }
+
+                ApiState.Loading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        LinearProgressIndicator(
+                            modifier = Modifier.width(150.dp).height(8.dp),
+                            color = Color.Red
+                        )
+
+                    }
+
+                }
+
+
+        }
 
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

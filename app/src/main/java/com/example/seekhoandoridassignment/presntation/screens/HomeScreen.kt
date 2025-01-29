@@ -31,13 +31,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-import coil3.compose.SubcomposeAsyncImage
+import coil.ImageLoader
+import coil.compose.SubcomposeAsyncImage
+import coil.request.CachePolicy
 import com.example.seekhoandoridassignment.data.dto.Anime
 import com.example.seekhoandoridassignment.data.dto.AnimeDetailsDto
 import com.example.seekhoandoridassignment.presntation.viewmodels.HomeViewModel
@@ -50,9 +53,17 @@ fun HomeScreen(navController: NavController) {
     val animeListState = viewModel.animeList.collectAsLazyPagingItems()
     val animeDetailState = viewModel.animeDetailState.collectAsState()
     var animeDetails = AnimeDetailsDto(title = "title", trailer = null, plot = "", genres = null, mainCast = null, noOfEpisodes = null, imageUrl = "")
-    var dominantColor = remember { mutableStateOf(Color.Black) }
+    var dominantColor = viewModel.color.collectAsState()
     val detailview = remember { mutableStateOf(false)}
     val scrollState = rememberLazyGridState()
+    val context = LocalContext.current
+    val imageLoader = remember {
+        ImageLoader.Builder(context)
+            .memoryCachePolicy(CachePolicy.ENABLED)
+            .diskCachePolicy(CachePolicy.ENABLED)
+            .crossfade(true)
+            .build()
+    }
 
     BackHandler(enabled = detailview.value) {
         detailview.value = false
@@ -62,7 +73,7 @@ fun HomeScreen(navController: NavController) {
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()){
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
         if (detailview.value == false) {
             when (animeListState.loadState.refresh) {
                 is LoadState.Error -> {
@@ -82,7 +93,7 @@ fun HomeScreen(navController: NavController) {
                             val anime = animeListState[index]
                             anime?.let {
                                 AnimeItem(anime = it, click = {
-                                    viewModel.getAnimeDetail(it.id); detailview.value = true; dominantColor.value = generateRandomColor()
+                                    viewModel.getAnimeDetail(it.id); detailview.value = true;viewModel.getColor(it.img,imageLoader) ; dominantColor
                                 })
                             }
                         }
@@ -92,12 +103,15 @@ fun HomeScreen(navController: NavController) {
 
         } else {
             DetailPageView(dominantColor, animeDetailState, animeDetails)
+            Log.d("color home screen", "$dominantColor")
 
         }
     }
 
 
+
 }
+
 
 @Composable
 fun AnimeItem(anime: Anime, click: () -> Unit) {
