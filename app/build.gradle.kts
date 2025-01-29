@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.seekhoandoridassignment"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -74,14 +74,19 @@ dependencies {
     implementation (libs.core)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+//    implementation(libs.coil.compose)
+    implementation(libs.coil)
     implementation(libs.coil.compose)
-    implementation(libs.coil.network.okhttp)
+//    implementation(libs.coil.network.okhttp)
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
 
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.paging.compose)
     implementation(libs.androidx.core.splashscreen)
+
+    implementation("androidx.palette:palette:1.0.0")
+
 
 
 
