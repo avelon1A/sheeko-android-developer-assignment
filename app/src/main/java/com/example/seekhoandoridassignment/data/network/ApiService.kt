@@ -18,4 +18,8 @@ interface ApiService {
     @GET("anime/{animeId}/characters")
     suspend fun getAnimeCharacter(@Path("animeId") animeId:Int): Response<AnimeCharacters>
 
+    @GET("anime")
+    suspend fun getSearchAnime(@Query("q") searchQuery: String): Response<animeList>
+
+
 }

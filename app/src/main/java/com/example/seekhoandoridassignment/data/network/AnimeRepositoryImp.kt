@@ -56,4 +56,24 @@ class AnimeRepositoryImp(val api:ApiService):AnimeRepository  {
         }
 
     }
+
+    override suspend fun getSearchAnime(searchQuery: String): AnimeListDto {
+        val response = api.getSearchAnime(searchQuery)
+        Log.d("search", "getSearchAnime repo: $response")
+        if (response.isSuccessful && response.body() != null) {
+            val animeListDto = response.body()?.data?.map { animeItemResponse ->
+                Anime(
+                    title = animeItemResponse.title,
+                    numberOfEpisode = animeItemResponse.episodes,
+                    rating = animeItemResponse.score,
+                    img = animeItemResponse.images.jpg.large_image_url,
+                    id = animeItemResponse.mal_id
+                )
+            } ?: emptyList()
+
+            return AnimeListDto(animeListDto)
+        } else {
+            throw Exception("Search Anime loading failed: ${response.message()}")
+        }
+    }
 }

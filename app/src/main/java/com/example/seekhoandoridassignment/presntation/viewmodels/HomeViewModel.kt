@@ -1,6 +1,7 @@
 package com.example.seekhoandoridassignment.presntation.viewmodels
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +10,7 @@ import androidx.paging.PagingConfig
 import coil.ImageLoader
 import com.example.mypokedex.util.getDominantColorFromImage
 import com.example.seekhoandoridassignment.data.dto.AnimeDetailsDto
+import com.example.seekhoandoridassignment.data.dto.AnimeListDto
 import com.example.seekhoandoridassignment.data.network.AnimeListDtoListSource
 import com.example.seekhoandoridassignment.domain.repository.AnimeRepository
 import com.example.seekhoandoridassignment.uitl.ApiState
@@ -20,6 +22,9 @@ import kotlinx.coroutines.launch
 class HomeViewModel(val animeRepository: AnimeRepository,val  context: Context): ViewModel() {
     private val _animeDetailState = MutableStateFlow<ApiState<AnimeDetailsDto>>(ApiState.Loading)
     val animeDetailState: StateFlow<ApiState<AnimeDetailsDto>> = _animeDetailState
+
+    private val _animeSearch = MutableStateFlow<ApiState<AnimeListDto>>(ApiState.Loading)
+    val animeSearch: StateFlow<ApiState<AnimeListDto>> = _animeSearch
 
     val animeList = Pager(PagingConfig(pageSize = 8)) {
         AnimeListDtoListSource(animeRepository)
@@ -40,6 +45,21 @@ class HomeViewModel(val animeRepository: AnimeRepository,val  context: Context):
             }
         }
     }
+    fun getSearchAnime(searchQuery: String){
+        _animeDetailState.value = ApiState.Loading
+        viewModelScope.launch{
+            try {
+                val searchAnime = animeRepository.getSearchAnime(searchQuery)
+                _animeSearch.value = ApiState.Success(searchAnime)
+        }
+            catch (e: Exception){
+                _animeSearch.value = ApiState.Error(e.message)
+                Log.d("search", "getSearchAnime api: ${e.message}")
+            }
+        }
+        Log.d("search", "getSearchAnime: $searchQuery")
+    }
+
 
 
     fun getColor(url: String, imageLoader: ImageLoader) {

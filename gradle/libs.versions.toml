@@ -25,7 +25,7 @@ media3Ui = "1.4.1"
 coreSplashscreen = "1.0.1"
 coil = "2.7.0"
 coilCompose = "2.7.0"
-
+cloudy = "0.2.4"
 
 
 [libraries]
@@ -60,6 +60,7 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3Ui" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
+compose-cloudy = { module = "com.github.skydoves:cloudy", version.ref = "cloudy" }
 
 
 
