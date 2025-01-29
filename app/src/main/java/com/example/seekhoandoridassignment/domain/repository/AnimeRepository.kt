@@ -6,4 +6,5 @@ import com.example.seekhoandoridassignment.data.dto.AnimeListDto
 interface AnimeRepository {
     suspend fun getAnimeList(nextPage: Int): AnimeListDto
     suspend fun getAnimeDetail(animeId: Int): AnimeDetailsDto
+    suspend fun getSearchAnime(searchQuery: String): AnimeListDto
 }
