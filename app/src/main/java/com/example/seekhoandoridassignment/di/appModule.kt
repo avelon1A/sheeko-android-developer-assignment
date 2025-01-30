@@ -33,7 +33,7 @@ fun provideConverterFactory(): GsonConverterFactory =
 fun provideRetrofit(gsonConverterFactory: GsonConverterFactory
 ): Retrofit {
  return Retrofit.Builder()
-  .baseUrl(BASE_URL)
+  .baseUrl("https://api.jikan.moe/v4/")
   .addConverterFactory(gsonConverterFactory)
   .build()
 }
