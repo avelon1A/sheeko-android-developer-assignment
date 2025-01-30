@@ -50,7 +50,7 @@ fun DetailView(animeDetails: AnimeDetailsDto) {
         text = animeDetails.title,
         style = MaterialTheme.typography.headlineLarge,
         fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(bottom = 8.dp, top = 12.dp)
+        modifier = Modifier.padding(bottom = 20.dp, top = 12.dp, start = 10.dp)
     )
     TrailerSection(
         trailerUrl = animeDetails.trailer,
@@ -66,36 +66,40 @@ fun DetailView(animeDetails: AnimeDetailsDto) {
     Spacer(modifier = Modifier.height(16.dp))
 
     animeDetails.mainCast?.let { cast ->
-        Text(
-            text = "Main Cast",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
-        CastSection(cast)
-    }
-    Text(
-        text = "Episodes: ${animeDetails.noOfEpisodes}",
-        style = MaterialTheme.typography.headlineSmall,
-        modifier = Modifier.padding(bottom = 16.dp)
-    )
+        Column(modifier = Modifier.padding(16.dp)) {
 
-    Text(
-        text = "Genres: ${animeDetails.genres}",
-        style = MaterialTheme.typography.titleLarge,
-        modifier = Modifier.padding(bottom = 16.dp)
-    )
-    Text(
-        text = "Plot",
-        style = MaterialTheme.typography.headlineSmall,
-        fontWeight = FontWeight.Medium,
-        modifier = Modifier.padding(vertical = 8.dp)
-    )
-    Text(
-        text = animeDetails.plot,
-        style = MaterialTheme.typography.bodyMedium,
-        modifier = Modifier.padding(bottom = 16.dp)
-    )
+            Text(
+                text = "Main Cast",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+            CastSection(cast)
+
+            Text(
+                text = "Episodes: ${animeDetails.noOfEpisodes}",
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            Text(
+                text = "Genres: ${animeDetails.genres}",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            Text(
+                text = "Plot",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+            Text(
+                text = animeDetails.plot,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+        }
+    }
 
 
 }
@@ -214,7 +218,6 @@ fun DetailPageView(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp)
                             .verticalScroll(rememberScrollState())
                     )
                     {
