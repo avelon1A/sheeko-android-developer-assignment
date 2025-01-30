@@ -71,6 +71,10 @@ class HomeViewModel(val animeRepository: AnimeRepository,val  context: Context):
         }
 
     }
+    fun clearSearch(){
+        _animeSearch.value = ApiState.Loading
+
+    }
 
 
 

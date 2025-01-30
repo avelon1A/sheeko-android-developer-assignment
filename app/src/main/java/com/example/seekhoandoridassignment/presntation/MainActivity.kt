@@ -13,11 +13,11 @@ import com.example.seekhoandoridassignment.presntation.ui.theme.SeekhoAndoridAss
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+//        enableEdgeToEdge()
         installSplashScreen()
         setContent {
             SeekhoAndoridAssignmentTheme {
-                Scaffold { innerPadding ->
+                Scaffold ( ){ innerPadding ->
                     AppNavHost(
                         modifier = Modifier.padding(innerPadding),
                     )
