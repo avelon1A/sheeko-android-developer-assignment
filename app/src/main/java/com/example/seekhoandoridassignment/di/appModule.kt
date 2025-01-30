@@ -1,7 +1,6 @@
 package com.example.seekhoandoridassignment.di
 
 import android.app.Application
-import com.example.seekhoandoridassignment.BuildConfig.BASE_URL
 import com.example.seekhoandoridassignment.data.network.AnimeRepositoryImp
 import com.example.seekhoandoridassignment.data.network.ApiService
 import com.example.seekhoandoridassignment.domain.repository.AnimeRepository
