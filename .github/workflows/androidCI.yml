@@ -58,34 +58,4 @@ jobs:
         name: app-${{ matrix.target }}
         path: app/build/outputs/
 
-    - name: Install git-chglog
-      run: |
-        curl -sSL https://github.com/git-chglog/git-chglog/releases/download/v0.11.0/git-chglog_0.11.0_linux_x86_64.tar.gz | tar -xz -C /usr/local/bin
-
-    - name: Generate changelog
-      run: |
-        git-chglog -o CHANGELOG.md
-
-    - name: Get Version
-      run: echo "::set-output name=version::$(./bin/azblogfilter --version)"
-      id: version
-
-    - name: Create GitHub Release
-      uses: actions/create-release@v1
-      id: create_release
-      with:
-        draft: false
-        prerelease: false
-        release_name: ${{ steps.version.outputs.version }}
-        tag_name: ${{ github.ref }}
-        body_path: CHANGELOG.md
-      env:
-        GITHUB_TOKEN: ${{ secrets.github }}
-
-    - name: Upload APK to Release
-      if: steps.create_release.outputs.upload_url != ''
-      run: |
-        echo "Uploading APK to release"
-        curl -XPOST -H "Authorization: token ${{ secrets.github }}" \
-        -F "file=@app/build/outputs/apk/release/app-release.apk" \
-        "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.create_release.outputs.id }}/assets?name=app-release.apk"
+   
