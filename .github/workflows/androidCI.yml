@@ -1,4 +1,3 @@
-
 name: Android CI
 
 on:
@@ -12,7 +11,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -58,3 +57,19 @@ jobs:
       with:
         name: app-${{ matrix.target }}
         path: app/build/outputs/
+
+    - name: Create GitHub Release
+      id: create_release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: app/build/outputs/**/*.apk
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+    - name: Upload APK to Release
+      if: steps.create_release.outputs.upload_url != ''
+      run: |
+        echo "Uploading APK to release"
+        curl -XPOST -H "Authorization: token ${{ secrets.github }}" \
+        -F "file=@app/build/outputs/apk/release/app-release.apk" \
+        "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.create_release.outputs.id }}/assets?name=app-release.apk"
