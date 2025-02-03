@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.seekhoandoridassignment.presntation.screens.HomeScreen
+import com.example.seekhoandoridassignment.presntation.screens.MangaPage
 import com.example.seekhoandoridassignment.presntation.viewmodels.HomeViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -18,9 +20,9 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun AppNavHost(
     modifier: Modifier = Modifier,
+    navController: NavHostController
 ) {
     SharedTransitionLayout {
-        val navController = rememberNavController()
         NavHost(
             navController = navController,
             startDestination = HomeScreen,
@@ -30,8 +32,10 @@ fun AppNavHost(
         ) {
 
             composable<HomeScreen> {
-
                 HomeScreen(navController )
+            }
+            composable<MangaPage> {
+                MangaPage( )
             }
 
         }

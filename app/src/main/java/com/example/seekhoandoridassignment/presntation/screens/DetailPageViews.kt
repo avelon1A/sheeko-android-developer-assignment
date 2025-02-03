@@ -194,9 +194,8 @@ fun CastSection(cast: List<AnimeCharactersDto>) {
 fun DetailPageView(
     dominantColor: State<Color>,
     animeDetailState: State<ApiState<AnimeDetailsDto>>,
-    animeDetails: AnimeDetailsDto?
 ) {
-    var animeDetails1 = animeDetails
+    var animeDetails1 = AnimeDetailsDto(title = "title", trailer = null, plot = "", genres = null, mainCast = null, noOfEpisodes = null, imageUrl = "")
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -208,34 +207,36 @@ fun DetailPageView(
     )
     {
 
-            when (val state = animeDetailState.value) {
-                is ApiState.Error -> {
-                    Log.d("error", state.message.toString())
-                    Text(text = state.message.toString())
-                }
+        when (val state = animeDetailState.value) {
+            is ApiState.Error -> {
+                Log.d("error", state.message.toString())
+                Text(text = state.message.toString())
+            }
 
-                is ApiState.Success -> {
-                    Column(
+            is ApiState.Success -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                )
+                {
+                    animeDetails1 = state.data
+                    DetailView(animeDetails1)
+                }
+            }
+
+            ApiState.Loading -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    LinearProgressIndicator(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
+                            .width(150.dp)
+                            .height(8.dp),
+                        color = Color.Red
                     )
-                    {
-                        animeDetails1 = state.data
-                        DetailView(animeDetails1)
-                    }
-                }
-
-                ApiState.Loading -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        LinearProgressIndicator(
-                            modifier = Modifier.width(150.dp).height(8.dp),
-                            color = Color.Red
-                        )
-
-                    }
 
                 }
+
+            }
 
 
         }
@@ -277,11 +278,5 @@ fun DetailPreview() {
 
 }
 
-fun generateRandomColor(): Color {
-    val red = Random.nextInt(0, 128)
-    val green = Random.nextInt(0, 128)
-    val blue = Random.nextInt(0, 128)
-    return Color(red, green, blue)
-}
 
 

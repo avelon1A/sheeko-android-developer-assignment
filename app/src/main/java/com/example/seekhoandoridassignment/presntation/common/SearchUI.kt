@@ -22,7 +22,9 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.SearchBarDefaults.inputFieldColors
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,12 +52,13 @@ fun MySearchBar( search: (searchQuery: String) -> Unit) {
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()
                 .semantics { traversalIndex = 0f },
+
             query = textFieldState,
             onQueryChange = { textFieldState = it },
             onSearch = { search(textFieldState) ;expanded = false },
             active = expanded,
             onActiveChange = { expanded = it },
-            placeholder = { Text(text = " search text", color = Color.Black) },
+            placeholder = { Text(text = " search text", color = MaterialTheme.colorScheme.onSurface) },
             leadingIcon = { Icon(Icons.Filled.Search, contentDescription = "Search Icon") },
             trailingIcon = {
                 if (textFieldState.isNotEmpty()) {
@@ -66,7 +69,9 @@ fun MySearchBar( search: (searchQuery: String) -> Unit) {
             },
             shape = MaterialTheme.shapes.small,
             colors = SearchBarDefaults.colors(
-                containerColor = Color.White,
+                containerColor = MaterialTheme.colorScheme.surface,
+                dividerColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                inputFieldColors = inputFieldColors(),
             ),
         )
         {
