@@ -8,9 +8,9 @@ import com.example.seekhoandoridassignment.data.dto.AnimeListDto
 import com.example.seekhoandoridassignment.data.model.animeDetail
 import com.example.seekhoandoridassignment.domain.repository.AnimeRepository
 
-class AnimeRepositoryImp(val api:ApiService):AnimeRepository  {
-    override suspend fun getAnimeList( page: Int): AnimeListDto {
-        val response = api.getAnimeList(page)
+class AnimeRepositoryImp(private val api:ApiService):AnimeRepository  {
+    override suspend fun getAnimeList( nextPage: Int): AnimeListDto {
+        val response = api.getAnimeList(nextPage)
         if (response.isSuccessful && response.body() != null) {
             val animeListDto = response.body()?.data?.map { animeItemResponse ->
                 Anime(
@@ -52,7 +52,6 @@ class AnimeRepositoryImp(val api:ApiService):AnimeRepository  {
         return animeDetailsDto
     } else {
             throw Exception("animeDetail loading failed: ${response.message()}")
-            Log.d("error", response.message())
         }
 
     }
