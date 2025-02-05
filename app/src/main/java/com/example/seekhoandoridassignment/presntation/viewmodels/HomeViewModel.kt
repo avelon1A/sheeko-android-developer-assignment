@@ -66,9 +66,11 @@ class HomeViewModel(val animeRepository: AnimeRepository,val  context: Context):
         viewModelScope.launch(Dispatchers.IO){
           val color =   getDominantColorFromImage(context,url,imageLoader)
             _color.value = color
-
-
         }
+
+    }
+    fun clearSearch(){
+        _animeSearch.value = ApiState.Loading
 
     }
 

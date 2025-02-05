@@ -9,7 +9,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
-    @GET("top/anime")
+    @GET("anime")
     suspend fun getAnimeList(@Query("page") page: Int): Response<animeList>
 
     @GET("anime/{animeId}")

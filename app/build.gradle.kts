@@ -86,6 +86,7 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
 
     implementation("androidx.palette:palette:1.0.0")
+    implementation ("androidx.compose.material3:material3:1.3.1")
 
     implementation(libs.compose.cloudy)
 
