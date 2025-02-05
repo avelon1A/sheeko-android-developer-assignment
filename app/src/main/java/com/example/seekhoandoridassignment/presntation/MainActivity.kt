@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
+import com.example.seekhoandoridassignment.presntation.screens.HomeScreen
 import com.example.seekhoandoridassignment.presntation.screens.MangaPage
 import com.example.seekhoandoridassignment.presntation.ui.theme.SeekhoAndoridAssignmentTheme
 
@@ -53,13 +54,13 @@ class MainActivity : ComponentActivity() {
                         BottomAppBar(
                             scrollBehavior = if (!isTouchExplorationEnabled) scrollBehavior else null,
                             content = {
-                                IconButton(onClick = { navController.navigate(MangaPage) }) {
+                                IconButton(onClick = { navController.navigate(HomeScreen) }) {
                                     Icon(
                                         Icons.AutoMirrored.Filled.ArrowBack,
                                         contentDescription = "Localized description"
                                     )
                                 }
-                                IconButton(onClick = { /* doSomething() */ }) {
+                                IconButton(onClick = { navController.navigate(MangaPage) }) {
                                     Icon(
                                         Icons.AutoMirrored.Filled.ArrowForward,
                                         contentDescription = "Localized description"

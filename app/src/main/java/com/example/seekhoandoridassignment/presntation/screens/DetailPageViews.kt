@@ -24,7 +24,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,7 +43,6 @@ import com.example.seekhoandoridassignment.data.dto.AnimeCharactersDto
 import com.example.seekhoandoridassignment.data.dto.AnimeDetailsDto
 import com.example.seekhoandoridassignment.presntation.common.VideoPlayer
 import com.example.seekhoandoridassignment.uitl.ApiState
-import kotlin.random.Random
 
 
 @Composable

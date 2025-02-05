@@ -3,6 +3,12 @@ package com.example.seekhoandoridassignment.presntation.screens
 import android.util.Log
 import com.example.seekhoandoridassignment.R
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.with
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,14 +23,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
@@ -39,8 +52,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -52,17 +63,20 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.ImageLoader
 import coil.compose.AsyncImage
-import coil.compose.SubcomposeAsyncImage
 import coil.request.CachePolicy
 import com.example.seekhoandoridassignment.data.dto.Anime
 import com.example.seekhoandoridassignment.data.dto.AnimeDetailsDto
+import com.example.seekhoandoridassignment.presntation.common.ImageCarousel
 import com.example.seekhoandoridassignment.presntation.common.MySearchBar
 import com.example.seekhoandoridassignment.presntation.viewmodels.HomeViewModel
 import com.example.seekhoandoridassignment.uitl.ApiState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+
+
 @Composable
 fun HomeScreen(navController: NavController) {
     val viewModel: HomeViewModel = koinViewModel()
@@ -73,6 +87,7 @@ fun HomeScreen(navController: NavController) {
     var dominantColor = viewModel.color.collectAsState()
     val detailview = remember { mutableStateOf(false) }
     val scrollState = rememberLazyGridState()
+    val scrollStateColumn = rememberLazyListState()
     var showSearchBar by remember { mutableStateOf(true) }
     val context = LocalContext.current
     val imageLoader = remember {
@@ -85,18 +100,22 @@ fun HomeScreen(navController: NavController) {
     var lastVisibleItemIndex by remember { mutableStateOf(0) }
     var lastScrollOffset by remember { mutableStateOf(0) }
 
-    LaunchedEffect(scrollState) {
-        snapshotFlow { scrollState.firstVisibleItemIndex to scrollState.firstVisibleItemScrollOffset }
+    LaunchedEffect(scrollStateColumn) {
+        snapshotFlow { scrollStateColumn.firstVisibleItemIndex to scrollStateColumn.firstVisibleItemScrollOffset }
             .collect { (visibleItemIndex, scrollOffset) ->
-                showSearchBar = visibleItemIndex < lastVisibleItemIndex ||
-                        (visibleItemIndex == lastVisibleItemIndex && scrollOffset < lastScrollOffset)
+
+                showSearchBar = if (visibleItemIndex == 0) {
+                    false
+                } else if (visibleItemIndex < lastVisibleItemIndex) {
+                    true
+                } else {
+                    false
+                }
 
                 lastVisibleItemIndex = visibleItemIndex
                 lastScrollOffset = scrollOffset
-
             }
     }
-
 
     LaunchedEffect(animeSearchList) {
         Log.d("search", "home screen: $animeSearchList")
@@ -113,7 +132,7 @@ fun HomeScreen(navController: NavController) {
     }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        if (detailview.value == false) {
+        if (!detailview.value) {
             when (animeListState.loadState.refresh) {
                 is LoadState.Error -> {
                     Text(text = "Error")
@@ -132,29 +151,74 @@ fun HomeScreen(navController: NavController) {
 
                 else -> {
                     if (animeSearchList is ApiState.Success) {
-                        LazyVerticalGrid(columns = GridCells.Fixed(2), state = scrollState) {
-                            items(animeSearchList.data.animeList.size) { index ->
-                                val anime = animeSearchList.data.animeList[index]
-                                anime.let {
-                                    AnimeItem(anime = it, click = {
-                                        viewModel.getAnimeDetail(it.id)
-                                        viewModel.getColor(it.img, imageLoader)
-                                    })
+                            LazyVerticalGrid(columns = GridCells.Fixed(2), state = scrollState) {
+                                items(animeSearchList.data.animeList.size) { index ->
+                                    val anime = animeSearchList.data.animeList[index]
+                                    anime.let {
+                                        AnimeItem(anime = it, click = {
+                                            viewModel.getAnimeDetail(it.id)
+                                            viewModel.getColor(it.img, imageLoader)
+                                        })
+                                    }
                                 }
                             }
-                        }
                     } else {
-                        LazyVerticalGrid(columns = GridCells.Fixed(2), state = scrollState) {
-                            items(animeListState.itemCount) { index ->
-                                val anime = animeListState[index]
-                                anime?.let {
-                                    AnimeItem(anime = it, click = {
-                                        viewModel.getAnimeDetail(it.id); detailview.value =
-                                        true;viewModel.getColor(it.img, imageLoader); dominantColor
-                                    })
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            state = scrollStateColumn
+                        ) {
+                            item {
+                                ImageCarousel(
+                                    imageList = listOf(
+                                        R.drawable.sololeveling,
+                                        R.drawable.demo,
+                                        R.drawable.applogo,
+                                    )
+                                )
+                            }
+
+                            items(animeListState.itemCount / 2 + animeListState.itemCount % 2) { rowIndex ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp),
+                                    horizontalArrangement = Arrangement.SpaceEvenly,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    val firstIndex = rowIndex * 2
+                                    val firstAnime = animeListState[firstIndex]
+                                    firstAnime?.let {
+                                        AnimeItem(
+                                            anime = it,
+                                            click = {
+                                                viewModel.getAnimeDetail(it.id)
+                                                detailview.value = true
+                                                viewModel.getColor(it.img, imageLoader)
+                                                dominantColor
+                                            },
+                                        )
+                                    }
+
+                                    if (firstIndex + 1 < animeListState.itemCount) {
+                                        val secondAnime = animeListState[firstIndex + 1]
+                                        secondAnime?.let {
+                                            AnimeItem(
+                                                anime = it,
+                                                click = {
+                                                    viewModel.getAnimeDetail(it.id)
+                                                    detailview.value = true
+                                                    viewModel.getColor(it.img, imageLoader)
+                                                    dominantColor
+                                                },
+                                            )
+                                        }
+                                    } else {
+                                        Spacer(modifier = Modifier.weight(1f))
+                                    }
                                 }
                             }
                         }
+
                     }
                     if (showSearchBar) {
                         MySearchBar(search = {
@@ -181,7 +245,7 @@ fun HomeScreen(navController: NavController) {
 fun AnimeItem(anime: Anime, click: () -> Unit) {
     Box(
         modifier = Modifier
-            .width(200.dp)
+            .width(170.dp)
             .height(300.dp)
             .padding(12.dp)
             .clip(shape = RoundedCornerShape(8.dp))
