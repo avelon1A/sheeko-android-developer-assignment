@@ -196,7 +196,7 @@ fun DetailPageView(
     dominantColor: State<Color>,
     animeDetailState: State<ApiState<AnimeDetailsDto>>,
 ) {
-    var animeDetails1 = AnimeDetailsDto(title = "title", trailer = null, plot = "", genres = null, mainCast = null, noOfEpisodes = null, imageUrl = "")
+    var animeDetails1: AnimeDetailsDto
     Box(
         modifier = Modifier
             .fillMaxSize()

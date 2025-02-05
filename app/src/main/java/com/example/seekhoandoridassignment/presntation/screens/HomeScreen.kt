@@ -3,12 +3,6 @@ package com.example.seekhoandoridassignment.presntation.screens
 import android.util.Log
 import com.example.seekhoandoridassignment.R
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.with
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,15 +22,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -65,13 +52,10 @@ import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import com.example.seekhoandoridassignment.data.dto.Anime
-import com.example.seekhoandoridassignment.data.dto.AnimeDetailsDto
 import com.example.seekhoandoridassignment.presntation.common.ImageCarousel
 import com.example.seekhoandoridassignment.presntation.common.MySearchBar
 import com.example.seekhoandoridassignment.presntation.viewmodels.HomeViewModel
 import com.example.seekhoandoridassignment.uitl.ApiState
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
@@ -82,10 +66,9 @@ fun HomeScreen(navController: NavController) {
     val viewModel: HomeViewModel = koinViewModel()
     val animeListState = viewModel.animeList.collectAsLazyPagingItems()
     val animeDetailState = viewModel.animeDetailState.collectAsState()
-    var animeSearchList = viewModel.animeSearch.collectAsState().value
-    var animeDetails = AnimeDetailsDto(title = "title", trailer = null, plot = "", genres = null, mainCast = null, noOfEpisodes = null, imageUrl = "")
-    var dominantColor = viewModel.color.collectAsState()
-    val detailview = remember { mutableStateOf(false) }
+    val animeSearchList = viewModel.animeSearch.collectAsState().value
+    val dominantColor = viewModel.color.collectAsState()
+    val detailView = remember { mutableStateOf(false) }
     val scrollState = rememberLazyGridState()
     val scrollStateColumn = rememberLazyListState()
     var showSearchBar by remember { mutableStateOf(true) }
@@ -97,8 +80,8 @@ fun HomeScreen(navController: NavController) {
             .crossfade(true)
             .build()
     }
-    var lastVisibleItemIndex by remember { mutableStateOf(0) }
-    var lastScrollOffset by remember { mutableStateOf(0) }
+    var lastVisibleItemIndex by remember { mutableIntStateOf(0) }
+    var lastScrollOffset by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(scrollStateColumn) {
         snapshotFlow { scrollStateColumn.firstVisibleItemIndex to scrollStateColumn.firstVisibleItemScrollOffset }
@@ -119,19 +102,19 @@ fun HomeScreen(navController: NavController) {
     LaunchedEffect(animeSearchList) {
         Log.d("search", "home screen: $animeSearchList")
     }
-    BackHandler(enabled = detailview.value) {
-        detailview.value = false
+    BackHandler(enabled = detailView.value) {
+        detailView.value = false
     }
     BackHandler(enabled = true) {
         viewModel.clearSearch()
     }
     LaunchedEffect(Unit) {
         if (animeListState.loadState.refresh is LoadState.Loading) {
+
         }
     }
-
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        if (!detailview.value) {
+        if (!detailView.value) {
             when (animeListState.loadState.refresh) {
                 is LoadState.Error -> {
                     Text(text = "Error")
@@ -191,9 +174,9 @@ fun HomeScreen(navController: NavController) {
                                             anime = it,
                                             click = {
                                                 viewModel.getAnimeDetail(it.id)
-                                                detailview.value = true
+                                                detailView.value = true
                                                 viewModel.getColor(it.img, imageLoader)
-                                                dominantColor
+
                                             },
                                         )
                                     }
@@ -205,9 +188,8 @@ fun HomeScreen(navController: NavController) {
                                                 anime = it,
                                                 click = {
                                                     viewModel.getAnimeDetail(it.id)
-                                                    detailview.value = true
+                                                    detailView.value = true
                                                     viewModel.getColor(it.img, imageLoader)
-                                                    dominantColor
                                                 },
                                             )
                                         }
@@ -288,7 +270,6 @@ fun AnimeItem(anime: Anime, click: () -> Unit) {
                     overflow = TextOverflow.Ellipsis,
                     color = Color.White
                 )
-
             }
             Row(
                 modifier = Modifier
@@ -311,9 +292,7 @@ fun AnimeItem(anime: Anime, click: () -> Unit) {
                         color = Color.White.copy(alpha = 0.7f)
                     )
                 }
-
-
-                    Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Image(
@@ -328,8 +307,6 @@ fun AnimeItem(anime: Anime, click: () -> Unit) {
                 }
                 }
             }
-
-
         }
     }
 
