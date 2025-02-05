@@ -1,13 +1,11 @@
 package com.example.seekhoandoridassignment.di
 
-import android.app.Application
 import com.example.seekhoandoridassignment.data.network.AnimeRepositoryImp
 import com.example.seekhoandoridassignment.data.network.ApiService
 import com.example.seekhoandoridassignment.domain.repository.AnimeRepository
 import com.example.seekhoandoridassignment.presntation.viewmodels.HomeViewModel
 import com.example.seekhoandoridassignment.uitl.YouTubePlayerManager
 import org.koin.android.ext.koin.androidApplication
-import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
