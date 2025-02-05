@@ -6,7 +6,6 @@ import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.animation.with
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +23,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -40,11 +41,10 @@ import com.example.seekhoandoridassignment.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun ImageCarousel(imageList: List<Int>) {
-    var currentIndex by remember { mutableStateOf(0) }
-    var imageOffset by remember { mutableStateOf(0f) }
+    var currentIndex by remember { mutableIntStateOf(0) }
+    var imageOffset by remember { mutableFloatStateOf(0f) }
     val coroutineScope = rememberCoroutineScope()
 
     val nextImage = {
