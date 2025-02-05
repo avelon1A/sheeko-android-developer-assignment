@@ -5,6 +5,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.animation.with
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -77,11 +78,13 @@ fun ImageCarousel(imageList: List<Int>) {
             targetState = currentIndex,
             transitionSpec = {
                 if (targetState > initialState) {
-                    slideInHorizontally(initialOffsetX = { fullWidth -> fullWidth }) with
-                            slideOutHorizontally(targetOffsetX = { fullWidth -> -fullWidth })
+                    slideInHorizontally(initialOffsetX = { fullWidth -> fullWidth }) togetherWith
+                            slideOutHorizontally(
+                                targetOffsetX = { fullWidth -> -fullWidth })
                 } else {
-                    slideInHorizontally(initialOffsetX = { fullWidth -> -fullWidth }) with
-                            slideOutHorizontally(targetOffsetX = { fullWidth -> fullWidth })
+                    slideInHorizontally(initialOffsetX = { fullWidth -> -fullWidth }) togetherWith
+                            slideOutHorizontally(
+                                targetOffsetX = { fullWidth -> fullWidth })
                 }.using(
                     SizeTransform(clip = false)
                 )
