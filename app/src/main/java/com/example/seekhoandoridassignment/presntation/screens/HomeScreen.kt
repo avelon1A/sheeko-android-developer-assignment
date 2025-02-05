@@ -103,17 +103,16 @@ fun HomeScreen(navController: NavController) {
     LaunchedEffect(scrollStateColumn) {
         snapshotFlow { scrollStateColumn.firstVisibleItemIndex to scrollStateColumn.firstVisibleItemScrollOffset }
             .collect { (visibleItemIndex, scrollOffset) ->
-
-                showSearchBar = if (visibleItemIndex == 0) {
-                    false
-                } else if (visibleItemIndex < lastVisibleItemIndex) {
-                    true
-                } else {
-                    false
+               if (visibleItemIndex == 0) {
+                   showSearchBar =  false
+                }
+               else {
+                    showSearchBar  =   visibleItemIndex < lastVisibleItemIndex ||
+              (visibleItemIndex == lastVisibleItemIndex && scrollOffset < lastScrollOffset)
+                    lastVisibleItemIndex = visibleItemIndex
+                    lastScrollOffset = scrollOffset
                 }
 
-                lastVisibleItemIndex = visibleItemIndex
-                lastScrollOffset = scrollOffset
             }
     }
 
