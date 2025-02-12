@@ -169,35 +169,49 @@ fun HomeScreen(navController: NavController) {
                                 ) {
                                     val firstIndex = rowIndex * 2
                                     val firstAnime = animeListState[firstIndex]
-                                    firstAnime?.let {
-                                        AnimeItem(
-                                            anime = it,
-                                            click = {
-                                                viewModel.getAnimeDetail(it.id)
-                                                detailView.value = true
-                                                viewModel.getColor(it.img, imageLoader)
 
-                                            },
-                                        )
-                                    }
-
-                                    if (firstIndex + 1 < animeListState.itemCount) {
-                                        val secondAnime = animeListState[firstIndex + 1]
-                                        secondAnime?.let {
+                                    Box(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(end = 4.dp)
+                                    ) {
+                                        firstAnime?.let {
                                             AnimeItem(
                                                 anime = it,
                                                 click = {
                                                     viewModel.getAnimeDetail(it.id)
                                                     detailView.value = true
                                                     viewModel.getColor(it.img, imageLoader)
-                                                },
+                                                }
                                             )
+                                        }
+                                    }
+
+                                    if (firstIndex + 1 < animeListState.itemCount) {
+                                        val secondAnime = animeListState[firstIndex + 1]
+
+                                        Box(
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(start = 4.dp)
+                                        ) {
+                                            secondAnime?.let {
+                                                AnimeItem(
+                                                    anime = it,
+                                                    click = {
+                                                        viewModel.getAnimeDetail(it.id)
+                                                        detailView.value = true
+                                                        viewModel.getColor(it.img, imageLoader)
+                                                    }
+                                                )
+                                            }
                                         }
                                     } else {
                                         Spacer(modifier = Modifier.weight(1f))
                                     }
                                 }
                             }
+
                         }
 
                     }
@@ -226,7 +240,7 @@ fun HomeScreen(navController: NavController) {
 fun AnimeItem(anime: Anime, click: () -> Unit) {
     Box(
         modifier = Modifier
-            .width(170.dp)
+            .width(200.dp)
             .height(300.dp)
             .padding(12.dp)
             .clip(shape = RoundedCornerShape(8.dp))
