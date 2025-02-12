@@ -69,7 +69,8 @@ fun ImageCarousel(imageList: List<Int>) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp),
+            .height(300.dp)
+            .padding(bottom = 10.dp, top = 10.dp),
         contentAlignment = Alignment.Center
     ) {
 

@@ -3,6 +3,7 @@ package com.example.seekhoandoridassignment.data.network
 import com.example.seekhoandoridassignment.data.model.animeDetail
 import com.example.seekhoandoridassignment.data.model.animeList
 import com.example.seekhoandoridassignment.data.model.character.AnimeCharacters
+import com.example.seekhoandoridassignment.data.model.maga.Manga
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -20,6 +21,7 @@ interface ApiService {
 
     @GET("anime")
     suspend fun getSearchAnime(@Query("q") searchQuery: String): Response<animeList>
-
+    @GET("manga/{id}")
+    suspend fun getMangaDetails(@Path("id") mangaId: Int):  Response<Manga>
 
 }
