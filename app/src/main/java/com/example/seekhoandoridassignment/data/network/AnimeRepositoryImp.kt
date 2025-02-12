@@ -6,6 +6,7 @@ import com.example.seekhoandoridassignment.data.dto.AnimeCharactersDto
 import com.example.seekhoandoridassignment.data.dto.AnimeDetailsDto
 import com.example.seekhoandoridassignment.data.dto.AnimeListDto
 import com.example.seekhoandoridassignment.data.model.animeDetail
+import com.example.seekhoandoridassignment.data.model.maga.Manga
 import com.example.seekhoandoridassignment.domain.repository.AnimeRepository
 
 class AnimeRepositoryImp(private val api:ApiService):AnimeRepository  {
@@ -73,6 +74,22 @@ class AnimeRepositoryImp(private val api:ApiService):AnimeRepository  {
             return AnimeListDto(animeListDto)
         } else {
             throw Exception("Search Anime loading failed: ${response.message()}")
+        }
+    }
+
+    override suspend fun getMangaDetails(id: Int): Manga {
+        val response = api.getMangaDetails(id)
+        if (response.isSuccessful && response.body() != null) {
+            val manga = response.body()!!
+            return Manga(
+                mal_id = manga.mal_id,
+                title = manga.title,
+                images = manga.images,
+                synopsis = manga.synopsis
+            )
+            return manga
+        } else {
+            throw Exception("Manga Details loading failed")
         }
     }
 }

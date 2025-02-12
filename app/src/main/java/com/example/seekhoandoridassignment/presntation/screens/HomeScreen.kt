@@ -105,9 +105,9 @@ fun HomeScreen(navController: NavController) {
     BackHandler(enabled = detailView.value) {
         detailView.value = false
     }
-    BackHandler(enabled = true) {
-        viewModel.clearSearch()
-    }
+//    BackHandler(enabled = true) {
+//        viewModel.clearSearch()
+//    }
     LaunchedEffect(Unit) {
         if (animeListState.loadState.refresh is LoadState.Loading) {
 
