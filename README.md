@@ -49,8 +49,6 @@ Shows detailed information for a selected anime, including:
 
 
 
-
-
 1. Clone the repository:
    ```bash
    git clone https://github.com/avelon1A/sheeko-android-developer-assignment.git
