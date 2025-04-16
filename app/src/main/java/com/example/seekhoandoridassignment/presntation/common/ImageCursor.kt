@@ -37,12 +37,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImagePainter.State.Empty.painter
+import coil.compose.rememberAsyncImagePainter
 import com.example.seekhoandoridassignment.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.File
 
 @Composable
-fun ImageCarousel(imageList: List<Int>) {
+fun ImageCarousel(imageList: List<Any>) {
     var currentIndex by remember { mutableIntStateOf(0) }
     var imageOffset by remember { mutableFloatStateOf(0f) }
     val coroutineScope = rememberCoroutineScope()
@@ -65,7 +68,6 @@ fun ImageCarousel(imageList: List<Int>) {
         }
     }
 
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -74,37 +76,47 @@ fun ImageCarousel(imageList: List<Int>) {
         contentAlignment = Alignment.Center
     ) {
 
-
         AnimatedContent(
             targetState = currentIndex,
             transitionSpec = {
                 if (targetState > initialState) {
                     slideInHorizontally(initialOffsetX = { fullWidth -> fullWidth }) togetherWith
-                            slideOutHorizontally(
-                                targetOffsetX = { fullWidth -> -fullWidth })
+                            slideOutHorizontally(targetOffsetX = { fullWidth -> -fullWidth })
                 } else {
                     slideInHorizontally(initialOffsetX = { fullWidth -> -fullWidth }) togetherWith
-                            slideOutHorizontally(
-                                targetOffsetX = { fullWidth -> fullWidth })
-                }.using(
-                    SizeTransform(clip = false)
-                )
+                            slideOutHorizontally(targetOffsetX = { fullWidth -> fullWidth })
+                }.using(SizeTransform(clip = false))
             }
         ) { index ->
-            Image(
-                painter = painterResource(imageList[index]),
-                contentDescription = "carousel image",
-                contentScale = ContentScale.FillWidth,
-                modifier = Modifier.fillMaxWidth()
-            )
+            val item = imageList[index]
+
+            val painter = when (item) {
+                is Int -> painterResource(id = item)
+                is String -> rememberAsyncImagePainter(model = File(item))
+                else -> null
+            }
+
+            painter?.let {
+                Image(
+                    painter = it,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxWidth().height(300.dp)
+                )
+            }
         }
+
         IconButton(
             onClick = { prevImage() },
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .padding(16.dp)
         ) {
-            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Previous Image",tint = Color.White)
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Previous Image",
+                tint = Color.White
+            )
         }
 
         IconButton(
@@ -113,8 +125,13 @@ fun ImageCarousel(imageList: List<Int>) {
                 .align(Alignment.CenterEnd)
                 .padding(16.dp)
         ) {
-            Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "Next Image",tint = Color.White)
+            Icon(
+                imageVector = Icons.Default.ArrowForward,
+                contentDescription = "Next Image",
+                tint = Color.White
+            )
         }
+
         Row(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -132,6 +149,7 @@ fun ImageCarousel(imageList: List<Int>) {
         }
     }
 }
+
 @Preview
 @Composable
 fun CursorLiablePreview()

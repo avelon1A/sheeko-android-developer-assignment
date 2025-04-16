@@ -10,9 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.seekhoandoridassignment.presntation.screens.HomeScreen
 import com.example.seekhoandoridassignment.presntation.screens.MangaPage
+import com.example.seekhoandoridassignment.presntation.screens.SearchScreen
 import com.example.seekhoandoridassignment.presntation.viewmodels.HomeViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -22,6 +22,8 @@ fun AppNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
+    val homeViewModel: HomeViewModel = koinViewModel()
+
     SharedTransitionLayout {
         NavHost(
             navController = navController,
@@ -32,10 +34,13 @@ fun AppNavHost(
         ) {
 
             composable<HomeScreen> {
-                HomeScreen(navController )
+                HomeScreen(navController ,homeViewModel)
             }
             composable<MangaPage> {
                 MangaPage( )
+            }
+            composable<SearchScreen> {
+                SearchScreen(navController,homeViewModel)
             }
 
         }

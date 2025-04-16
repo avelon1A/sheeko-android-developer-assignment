@@ -92,4 +92,42 @@ class AnimeRepositoryImp(private val api:ApiService):AnimeRepository  {
             throw Exception("Manga Details loading failed")
         }
     }
+
+    override suspend fun getTopAnime(nextPage: Int,filter:String): AnimeListDto {
+        val response = api.getTopAnimeList(nextPage,filter)
+        if (response.isSuccessful && response.body() != null) {
+            val animeListDto = response.body()?.data?.map { animeItemResponse ->
+                Anime(
+                    title = animeItemResponse.title,
+                    numberOfEpisode = animeItemResponse.episodes,
+                    rating = animeItemResponse.score,
+                    img = animeItemResponse.images.jpg.large_image_url,
+                    id = animeItemResponse.mal_id
+                )
+            } ?: emptyList()
+
+            return AnimeListDto(animeListDto)
+        } else {
+            throw Exception("animeList loading failed: ${response.message()}")
+        }
+    }
+
+    override suspend fun getSeasons(nextPage: Int): AnimeListDto {
+        val response = api.getSeasonsList(nextPage)
+        if (response.isSuccessful && response.body() != null) {
+            val animeListDto = response.body()?.data?.map { animeItemResponse ->
+                Anime(
+                    title = animeItemResponse.title,
+                    numberOfEpisode = animeItemResponse.episodes,
+                    rating = animeItemResponse.score,
+                    img = animeItemResponse.images.jpg.large_image_url,
+                    id = animeItemResponse.mal_id
+                )
+            } ?: emptyList()
+
+            return AnimeListDto(animeListDto)
+        } else {
+            throw Exception("animeList loading failed: ${response.message()}")
+        }
+    }
 }

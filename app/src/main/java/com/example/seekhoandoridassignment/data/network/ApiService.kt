@@ -24,4 +24,12 @@ interface ApiService {
     @GET("manga/{id}")
     suspend fun getMangaDetails(@Path("id") mangaId: Int):  Response<Manga>
 
+    @GET("top/anime")
+    suspend fun getTopAnimeList(@Query("page") page: Int,
+        @Query("filter") filter: String,
+    ): Response<animeList>
+
+    @GET("seasons/now")
+    suspend fun getSeasonsList(@Query("page") page: Int): Response<animeList>
+
 }

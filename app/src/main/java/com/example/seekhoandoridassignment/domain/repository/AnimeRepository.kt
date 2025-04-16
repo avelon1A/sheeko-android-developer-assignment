@@ -9,4 +9,6 @@ interface AnimeRepository {
     suspend fun getAnimeDetail(animeId: Int): AnimeDetailsDto
     suspend fun getSearchAnime(searchQuery: String): AnimeListDto
     suspend fun getMangaDetails(id: Int): Manga
+    suspend fun getTopAnime(nextPage: Int,filter:String):AnimeListDto
+    suspend fun getSeasons(nextPage: Int):AnimeListDto
 }
