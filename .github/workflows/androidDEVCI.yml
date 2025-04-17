@@ -1,19 +1,18 @@
+
 name: Android CI
 
 on:
   push:
     branches:
-      - master
       - dev
   pull_request:
     branches:
-      - master
       - dev
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -55,9 +54,7 @@ jobs:
       run: ./gradlew lint
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         name: app-${{ matrix.target }}
         path: app/build/outputs/
-
-   
