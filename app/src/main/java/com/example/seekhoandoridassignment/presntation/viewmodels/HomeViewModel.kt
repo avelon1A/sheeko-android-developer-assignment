@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import coil.ImageLoader
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import com.example.mypokedex.util.getDominantColorFromImage
 import com.example.seekhoandoridassignment.data.configModel.defaultAnimeSections
 import com.example.seekhoandoridassignment.data.dto.AnimeDetailsDto
@@ -19,6 +21,7 @@ import com.example.seekhoandoridassignment.uitl.ApiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -66,7 +69,13 @@ class HomeViewModel(
                     sectionList.add(AnimeSection(config.title, config.filter, animeList))
                 } catch (e: Exception) {
                     Log.e("HomeViewModel", "Error fetching ${config.title}", e)
-                    sectionList.add(AnimeSection(config.title, config.filter, AnimeListDto(emptyList())))
+                    sectionList.add(
+                        AnimeSection(
+                            config.title,
+                            config.filter,
+                            AnimeListDto(emptyList())
+                        )
+                    )
                 }
             }
 
@@ -78,9 +87,13 @@ class HomeViewModel(
     }
 
 
-    private suspend fun fetchTopAnime(page: Int,filter:String, onSuccess: (AnimeListDto) -> Unit) {
+    private suspend fun fetchTopAnime(
+        page: Int,
+        filter: String,
+        onSuccess: (AnimeListDto) -> Unit
+    ) {
         try {
-            val result = animeRepository.getTopAnime(nextPage = page,filter = filter)
+            val result = animeRepository.getTopAnime(nextPage = page, filter = filter)
             onSuccess(result)
         } catch (e: Exception) {
             Log.e("HomeViewModel", "fetchTopAnime($filter): ${e.localizedMessage}", e)

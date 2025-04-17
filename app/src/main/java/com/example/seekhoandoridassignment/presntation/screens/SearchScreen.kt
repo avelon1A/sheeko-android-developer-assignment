@@ -24,7 +24,6 @@ import com.example.seekhoandoridassignment.presntation.common.MySearchBar
 import com.example.seekhoandoridassignment.presntation.viewmodels.HomeViewModel
 import com.example.seekhoandoridassignment.uitl.ApiState
 import kotlinx.serialization.Serializable
-import org.koin.androidx.compose.koinViewModel
 
 
 @Composable

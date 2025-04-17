@@ -18,13 +18,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +33,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -40,7 +43,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.ImageLoader
 import coil.compose.AsyncImage
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import com.example.seekhoandoridassignment.R
 import com.example.seekhoandoridassignment.data.dto.Anime
 import com.example.seekhoandoridassignment.presntation.common.ImageCarousel
@@ -56,13 +62,24 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
     val state = viewModel.homeUiState.collectAsState().value
     val dominantColor = viewModel.color.collectAsState()
     val detailView = remember { mutableStateOf(false) }
-    val scrollState = rememberLazyGridState()
     val scrollStateColumn = rememberLazyListState()
     val context = LocalContext.current
 
 
+
     BackHandler(enabled = detailView.value) {
         detailView.value = false
+    }
+    LaunchedEffect(state.sections) {
+        val imageLoader = ImageLoader(context)
+        state.sections.flatMap { it.animeList.animeList }.forEach { anime ->
+            val request = ImageRequest.Builder(context)
+                .data(anime.img)
+                .memoryCachePolicy(CachePolicy.ENABLED)
+                .diskCachePolicy(CachePolicy.ENABLED)
+                .build()
+            imageLoader.enqueue(request)
+        }
     }
 
 
@@ -85,11 +102,14 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
 
                 else -> {
                     val imageList = listOf(
-                        getImagePath("splash_image.png",context)
+                        getImagePath("splash_image_0.png",context),
+                        getImagePath("splash_image_1.png" ,context),
+                        getImagePath("splash_image_2.png",context)
                     )
+                    val nestedScrollConnection = remember { object : NestedScrollConnection {} }
 
                     LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize().nestedScroll(nestedScrollConnection),
                         state = scrollStateColumn
                     ) {
                         item {
@@ -140,7 +160,7 @@ fun AnimeItem(anime: Anime, click: () -> Unit,modifier:Modifier = Modifier) {
         modifier = modifier
             .width(150.dp)
             .height(200.dp)
-            .padding(12.dp)
+//            .padding(12.dp)
             .clip(shape = RoundedCornerShape(8.dp))
             .clickable {
                 click()
@@ -149,7 +169,7 @@ fun AnimeItem(anime: Anime, click: () -> Unit,modifier:Modifier = Modifier) {
         AsyncImage(
             model = anime.img,
             contentDescription = anime.title,
-            placeholder = painterResource(R.drawable.demo),
+            placeholder =  ColorPainter(Color.Black),
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.surface)
                 .fillMaxSize()
@@ -222,6 +242,9 @@ fun AnimeItem(anime: Anime, click: () -> Unit,modifier:Modifier = Modifier) {
         }
     }
 
+
+
+
     @Preview(showBackground = false)
     @Composable
     fun AnimeItemPreview() {
@@ -233,7 +256,7 @@ fun AnimeItem(anime: Anime, click: () -> Unit,modifier:Modifier = Modifier) {
                 rating = 4.7,
                 img = "https://cdn.myanimelist.net/images/anime/1222/108880.jpg"
             ), click = {},
-            modifier = Modifier
+            modifier = Modifier,
         )
     }
 
